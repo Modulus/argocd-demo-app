@@ -36,7 +36,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
-          password: ${{ secrets.CR_PAT }}
+          password: ${{ secrets.CR_PATH }}
       - name: Docker build
         run: docker build -t ghcr.io/modulus/argocd-demo-app:latest .
       - name: Docker push
