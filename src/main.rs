@@ -3,6 +3,8 @@
 #[macro_use] extern crate rocket;
 use rocket::http::Status;
 use chrono::Utc;
+use rocket_prometheus::PrometheusMetrics;
+
 
 #[get("/version")] 
 fn version() -> String {
@@ -39,6 +41,8 @@ fn fail2() -> Status {
 }
 
 fn main() {
+    let prometheus = PrometheusMetrics::new();
     rocket::ignite()
-        .mount("/", routes![index, version, slow, fail1, fail2]).launch();
+        .attach(prometheus.clone())
+        .mount("/", routes![index, version, slow, fail1, fail2]).mount("/metrics", prometheus).launch();
 }
