@@ -70,6 +70,7 @@ name = "argocd-demo-app"
 version = "1.0.0"
 dependencies = [
  "chrono",
+ "rand",
  "rocket",
  "rocket_prometheus",
 ]

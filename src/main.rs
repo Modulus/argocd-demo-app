@@ -1,6 +1,7 @@
 #![feature(proc_macro_hygiene, decl_macro)]
-
 #[macro_use] extern crate rocket;
+
+use rand::Rng;
 use rocket::http::Status;
 use chrono::Utc;
 use rocket_prometheus::PrometheusMetrics;
@@ -23,7 +24,12 @@ fn index() -> String {
 fn slow() -> String {
     use std::{thread, time};
 
-    let ten_millis = time::Duration::from_secs(3);
+    let mut rng = rand::thread_rng();
+    let delay: u64 = rng.gen_range(0..20);
+
+    println!("{}", delay);
+
+    let ten_millis = time::Duration::from_secs(delay);
     // let now = time::Instant::now();
 
     thread::sleep(ten_millis);
