@@ -10,13 +10,22 @@ fn version() -> String {
     let now = Utc::now();
 
     format!("version {} @ {}", VERSION, now)
-
 }
-
 
 #[get("/")]
 fn index() -> String {
     format!("Hello, world!")
+}
+
+#[get("/slow")] 
+fn slow() -> String {
+    use std::{thread, time};
+
+    let ten_millis = time::Duration::from_secs(3);
+    // let now = time::Instant::now();
+
+    thread::sleep(ten_millis);
+    format!("Slow response!")
 }
 
 #[get("/fail1")]
@@ -31,5 +40,5 @@ fn fail2() -> Status {
 
 fn main() {
     rocket::ignite()
-        .mount("/", routes![index, version, fail1, fail2]).launch();
+        .mount("/", routes![index, version, slow, fail1, fail2]).launch();
 }
