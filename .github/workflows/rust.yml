@@ -1,0 +1,47 @@
+name: Master
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container: rust:1.51-buster
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install diesel
+      run: cargo install diesel_cli
+    - name: Prepare database
+      run: diesel migration run
+    - uses: actions/cache@v2
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          target
+        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+    - name: Run tests
+      run: cargo test --verbose
+  package:
+    if:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: login
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CR_PAT }}
+      - name: Docker build
+        run: docker build -t ghcr.io/modulus/argocd-demo-app:latest .
+      - name: Docker push
+        run: docker push ghcr.io/modulus/argocd-demo-app:latest
