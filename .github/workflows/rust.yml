@@ -16,10 +16,6 @@ jobs:
     container: rust:1.51-buster
     steps:
     - uses: actions/checkout@v2
-    - name: Install diesel
-      run: cargo install diesel_cli
-    - name: Prepare database
-      run: diesel migration run
     - uses: actions/cache@v2
       with:
         path: |
