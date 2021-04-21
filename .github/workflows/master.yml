@@ -1,0 +1,45 @@
+name: Tags
+
+on:
+  push:
+    tags:
+      - v[0-9].[0-9].[0-9]
+  pull_request:
+    tags: 
+      - v[0-9].[0-9].[0-9]
+
+env:
+  CARGO_TERM_COLOR: always
+
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container: rust:1.51-buster
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/cache@v2
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          target
+        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+    - name: Run tests
+      run: rustup default nightly && cargo test --verbose
+  package:
+    if:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: login
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CR_PAT }}
+      - name: Docker build
+        run: docker build -t ghcr.io/modulus/argocd-demo-app::${{ GITHUB_REF }} .
+      - name: Docker push
+        run: docker push ghcr.io/modulus/argocd-demo-app::${{ GITHUB_REF }}
