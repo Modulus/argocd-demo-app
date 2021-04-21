@@ -1,4 +1,4 @@
-FROM rust:1.51-buster as builder
+FROM rustlang/rust:nightly-buster as builder
 WORKDIR /opt/app
 COPY . /opt/app/
 RUN ls -la /opt/app && rustup default nightly
