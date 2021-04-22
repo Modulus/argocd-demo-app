@@ -1,12 +1,10 @@
-name: Tags
+name: Master
 
 on:
   push:
-    tags:
-      - v[0-9].[0-9].[0-9]
+    branches: [ master ]
   pull_request:
-    tags: 
-      - v[0-9].[0-9].[0-9]
+    branches: [ master ]
 
 env:
   CARGO_TERM_COLOR: always
@@ -40,6 +38,10 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.CR_PAT }}
       - name: Docker build
-        run: docker build -t ghcr.io/modulus/argocd-demo-app::${{ GITHUB_REF }} .
+        run: docker build -t ghcr.io/modulus/argocd-demo-app:latest .
       - name: Docker push
-        run: docker push ghcr.io/modulus/argocd-demo-app::${{ GITHUB_REF }}
+        run: docker push ghcr.io/modulus/argocd-demo-app:latest
+      - name: Docker build locust
+        run: docker build -t ghcr.io/modulus/argocd-demo-app-locust::latest .
+      - name: Docker push locust
+        run: docker push ghcr.io/modulus/argocd-demo-app-locust::latest        
