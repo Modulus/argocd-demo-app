@@ -48,7 +48,15 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.CR_PAT }}
-
+      - name: Build all  
+        run: |
+          docker build -t ghcr.io/modulus/argocd-demo-app:${{ steps.vars.outputs.tag }}  .
+          docker build -t ghcr.io/modulus/argocd-demo-app-locust:${{ steps.vars.outputs.tag }}  ./locust
+          
+          
+      #docker push ghcr.io/modulus/argocd-demo-app:${{ steps.vars.outputs.tag }} 
+          
+      # docker push ghcr.io/modulus/argocd-demo-app-locust:${{ steps.vars.outputs.tag }} 
 
       # - name: Docker build app
       #   uses: docker/build-push-action@v2
