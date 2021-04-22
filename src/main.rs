@@ -7,7 +7,30 @@ use chrono::Utc;
 use rocket_prometheus::PrometheusMetrics;
 use rocket::response::status::BadRequest;
 use rocket::response::status;
-use log::{info};
+use log::{info, error};
+
+use once_cell::sync::Lazy;
+use rocket_prometheus::{
+    prometheus::{opts, IntCounterVec},
+};
+
+static GREEN_VOTES_COUNTER: Lazy<IntCounterVec> = Lazy::new(|| {
+    IntCounterVec::new(opts!("votes_green", "Count of green votes"), &["green"])
+        .expect("Could not create votes_green counter")
+});
+
+static YELLOW_VOTES_COUNTER: Lazy<IntCounterVec> = Lazy::new(|| {
+    IntCounterVec::new(opts!("votes_yellow", "Count of yellow votes"), &["yellow"])
+        .expect("Could not create votes_yellow counter")
+});
+
+static RED_VOTES_COUNTER: Lazy<IntCounterVec> = Lazy::new(|| {
+    IntCounterVec::new(opts!("votes_red", "Count of red votes"), &["red"])
+        .expect("Could not create votes_red counter")
+});
+
+
+
 
 
 #[get("/version")] 
@@ -53,14 +76,32 @@ fn vote(color: Option<String>) -> Result<String, BadRequest<String>> {
     match color {
         Some(color_string) => {
             let voted_string = format!("You voted: {}", color_string);
+            info!("{}", voted_string);
             match color_string.as_str() {
-                "green" => Ok(voted_string),
-                "red" => Ok(voted_string),
-                "yello" => Ok(voted_string),
-                _ =>  Err(BadRequest(Some(String::from("Invalid choice!"))))
+                "green" => {
+                    info!("Green vote registered!"); 
+                    GREEN_VOTES_COUNTER.with_label_values(&[color_string.as_str()]).inc();
+                    Ok(voted_string)
+                }
+                "red" => {
+                    info!("Red vote registered!");
+                    RED_VOTES_COUNTER.with_label_values(&[color_string.as_str()]).inc();
+                    Ok(voted_string)
+                }
+                "yellow" => {
+                    info!("Yellow vote registered!");
+                    YELLOW_VOTES_COUNTER.with_label_values(&[color_string.as_str()]).inc();
+                    Ok(voted_string)
+                }
+                _ =>  {
+                    error!("Invalid color vote!");
+                    Err(BadRequest(Some(String::from("Invalid choice!"))))
+                }
             }
         },
-        _ => Err(BadRequest(Some(String::from("You did not vote"))))
+        _ => {
+            error!("No color in request path");
+            Err(BadRequest(Some(String::from("You did not vote"))))}
     }
 
 }
@@ -70,9 +111,23 @@ fn main() {
     env_logger::init();
 
     let prometheus = PrometheusMetrics::new();
+
+    prometheus.registry()
+        .register(Box::new(GREEN_VOTES_COUNTER.clone()))
+        .expect("Failed to register green votes counter!");
+
+    prometheus.registry()
+        .register(Box::new(YELLOW_VOTES_COUNTER.clone()))
+        .expect("Failed to register yellow votes counter!");
+
+    prometheus.registry()
+        .register(Box::new(RED_VOTES_COUNTER.clone()))
+        .expect("Failed to register red votes counter!");
+
     rocket::ignite()
         .attach(prometheus.clone())
-        .mount("/", routes![index, version, slow, fail, vote]).mount("/metrics", prometheus).launch();
+        .mount("/", routes![index, version, slow, fail, vote])
+        .mount("/metrics", prometheus).launch();
 }
 
 fn create_error_status() -> Status {
@@ -102,8 +157,12 @@ mod tests {
 
     #[test]
     fn test_verify_create_error_status_returns_error_code() {
-        let result = create_error_status();
-        assert!(result.code >= 500 && result.code <= 511)
+        for current in 1..250 {
+            info!("Current loop index: {}", current);
+            let result = create_error_status();
+            assert!(result.code >= 500 && result.code <= 511)
+        }
+
     }
 
     #[test]

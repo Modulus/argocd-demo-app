@@ -72,6 +72,7 @@ dependencies = [
  "chrono",
  "env_logger",
  "log 0.4.14",
+ "once_cell",
  "rand",
  "rocket",
  "rocket_prometheus",
@@ -505,6 +506,12 @@ dependencies = [
  "hermit-abi",
  "libc",
 ]
+
+[[package]]
+name = "once_cell"
+version = "1.7.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "af8b08b04175473088b46763e51ee54da5f9a164bc162f615b91bc179dbf15a3"
 
 [[package]]
 name = "opaque-debug"
