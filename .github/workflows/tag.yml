@@ -13,23 +13,23 @@ env:
 
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    container: rust:1.51-buster
-    steps:
-    - uses: actions/checkout@v2
-    - uses: actions/cache@v2
-      with:
-        path: |
-          ~/.cargo/registry
-          ~/.cargo/git
-          target
-        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-    - name: Run tests
-      run: rustup default nightly && cargo test --verbose
+  # test:
+  #   runs-on: ubuntu-latest
+  #   container: rust:1.51-buster
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #   - uses: actions/cache@v2
+  #     with:
+  #       path: |
+  #         ~/.cargo/registry
+  #         ~/.cargo/git
+  #         target
+  #       key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+  #   - name: Run tests
+  #     run: rustup default nightly && cargo test --verbose
   package:
-    if:
-    needs: test
+    # if:
+    # needs: test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -41,21 +41,27 @@ jobs:
           password: ${{ secrets.CR_PAT }}
       - name: Set vars
         id: vars
-        run: echo ::set-output name=tag::${GITHUB_REF#ref/*/}          
-      - name: Docker build app
-        uses: docker/build-push-action@v2
+        run: echo ::set-output name=tag::${GITHUB_REF#ref/*/}     
+      - name: Echo stuffs
         env:
-          RELEASE_VERSION: ${{ steps.vars.output.tag}}
-        with:
-          context: .
-          push: true
-          tags: ghcr.io/modulus/argocd-demo-app:${{ RELEASE_VERSION }}
-      - name: Docker build locust
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          push: true
-          tags: ghcr.io/modulus/argocd-demo-app-locust:${{ RELEASE_VERSION }}
+          RELEASE_VERSION: ${{ steps.vars.output.tag}}  
+        run: |
+          echo $RELEASE_VERSION
+
+      # - name: Docker build app
+      #   uses: docker/build-push-action@v2
+      #   env:
+      #     RELEASE_VERSION: ${{ steps.vars.output.tag}}
+      #   with:
+      #     context: .
+      #     push: true
+      #     tags: ghcr.io/modulus/argocd-demo-app:${{ RELEASE_VERSION }}
+      # - name: Docker build locust
+      #   uses: docker/build-push-action@v2
+      #   with:
+      #     context: .
+      #     push: true
+      #     tags: ghcr.io/modulus/argocd-demo-app-locust:${{ RELEASE_VERSION }}
 
       # - name: Build all  
       #   run: |
