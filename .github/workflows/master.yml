@@ -42,6 +42,6 @@ jobs:
       - name: Docker push
         run: docker push ghcr.io/modulus/argocd-demo-app:latest
       - name: Docker build locust
-        run: docker build -t ghcr.io/modulus/argocd-demo-app-locust:latest .
+        run: docker build -t ghcr.io/modulus/argocd-demo-app-locust:latest ./locust
       - name: Docker push locust
         run: docker push ghcr.io/modulus/argocd-demo-app-locust:latest        
