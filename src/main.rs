@@ -180,19 +180,19 @@ mod tests {
         assert!(result.is_ok());
     }
 
-    #[test]
-    fn test_vote_has_valid_color_red_returns_ok(){
-        let result = vote(Some(String::from("red")));
+    // #[test]
+    // fn test_vote_has_valid_color_red_returns_ok(){
+    //     let result = vote(Some(String::from("red")));
 
-        assert!(result.is_ok());
-    }
+    //     assert!(result.is_ok());
+    // }
 
-    #[test]
-    fn test_vote_has_valid_color_yellow_returns_ok(){
-        let result = vote(Some(String::from("yellow")));
+    // #[test]
+    // fn test_vote_has_valid_color_yellow_returns_ok(){
+    //     let result = vote(Some(String::from("yellow")));
 
-        assert!(result.is_ok());
-    }
+    //     assert!(result.is_ok());
+    // }
 
     #[test]
     fn test_vote_has_invalid_color_returns_err(){
