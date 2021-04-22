@@ -40,9 +40,22 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.CR_PAT }}
       - name: Docker build app
-        run: |
-          docker build -t ghcr.io/modulus/argocd-demo-app:${{ env.GITHUB_REF }} .
-          docker push ghcr.io/modulus/argocd-demo-app:${{ env.GITHUB_REF }}
-          docker build -t ghcr.io/modulus/argocd-demo-app-locust:${{ env.GITHUB_REF }} ./locust
-          docker push ghcr.io/modulus/argocd-demo-app-locust:${{ env.GITHUB_REF }}
+        uses: docker-build-push-action@2
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/modulus/argocd-demo-app:${{ env.GITHUB_REF }}
+      - name: Docker build locust
+        uses: docker-build-push-action@2
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/modulus/argocd-demo-app-locust:${{ env.GITHUB_REF }}
+
+      # - name: Build all  
+      #   run: |
+      #     docker build -t ghcr.io/modulus/argocd-demo-app:${{ env.GITHUB_REF }} .
+      #     docker push ghcr.io/modulus/argocd-demo-app:${{ env.GITHUB_REF }}
+      #     docker build -t ghcr.io/modulus/argocd-demo-app-locust:${{ env.GITHUB_REF }} ./locust
+      #     docker push ghcr.io/modulus/argocd-demo-app-locust:${{ env.GITHUB_REF }}
 
