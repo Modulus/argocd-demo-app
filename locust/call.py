@@ -21,11 +21,10 @@ class QuickstartUser(HttpUser):
 
     @task(3)
     def view_item(self):
-        for item_id in range(1000):
-            num = random.randint(1,3)
-            color = get_color(num)
-            self.client.post(f"/vote/{color}")
-            time.sleep(1)
+        num = random.randint(1,3)
+        color = get_color(num)
+        self.client.post(f"/vote/{color}")
+        time.sleep(2)
 
     def on_start(self):
         pass

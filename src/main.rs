@@ -1,6 +1,7 @@
 #![feature(proc_macro_hygiene, decl_macro)]
 #[macro_use] extern crate rocket;
 
+
 use rand::Rng;
 use rocket::http::Status;
 use chrono::Utc;
@@ -73,6 +74,16 @@ fn fail() -> Status {
 
 #[post("/vote/<color>")]
 fn vote(color: Option<String>) -> Result<String, BadRequest<String>> {
+    use std::{thread, time};
+    let mut rng = rand::thread_rng();
+    let delay: u64 = rng.gen_range(0..3);
+
+    info!("{}", delay);
+
+    let ten_millis = time::Duration::from_secs(delay);
+    thread::sleep(ten_millis);
+    info!("Done with expensive code");
+
     match color {
         Some(color_string) => {
             let voted_string = format!("You voted: {}", color_string);
@@ -83,16 +94,16 @@ fn vote(color: Option<String>) -> Result<String, BadRequest<String>> {
                     GREEN_VOTES_COUNTER.with_label_values(&[color_string.as_str()]).inc();
                     Ok(voted_string)
                 }
-                "red" => {
-                    info!("Red vote registered!");
-                    RED_VOTES_COUNTER.with_label_values(&[color_string.as_str()]).inc();
-                    Ok(voted_string)
-                }
-                "yellow" => {
-                    info!("Yellow vote registered!");
-                    YELLOW_VOTES_COUNTER.with_label_values(&[color_string.as_str()]).inc();
-                    Ok(voted_string)
-                }
+                // "red" => {
+                //     info!("Red vote registered!");
+                //     RED_VOTES_COUNTER.with_label_values(&[color_string.as_str()]).inc();
+                //     Ok(voted_string)
+                // }
+                // "yellow" => {
+                //     info!("Yellow vote registered!");
+                //     YELLOW_VOTES_COUNTER.with_label_values(&[color_string.as_str()]).inc();
+                //     Ok(voted_string)
+                // }
                 _ =>  {
                     error!("Invalid color vote!");
                     Err(BadRequest(Some(String::from("Invalid choice!"))))
@@ -105,7 +116,6 @@ fn vote(color: Option<String>) -> Result<String, BadRequest<String>> {
     }
 
 }
-
 
 fn main() {
     env_logger::init();
@@ -153,8 +163,6 @@ fn create_error_status() -> Status {
 mod tests {
     use super::*;
 
-
-
     #[test]
     fn test_verify_create_error_status_returns_error_code() {
         for current in 1..250 {
@@ -180,8 +188,22 @@ mod tests {
     }
 
     #[test]
+    fn test_vote_has_valid_color_yellow_returns_ok(){
+        let result = vote(Some(String::from("yellow")));
+
+        assert!(result.is_ok());
+    }
+
+    #[test]
     fn test_vote_has_invalid_color_returns_err(){
         let result = vote(Some(String::from("yes")));
+
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_vote_has_empty_string_returns_err(){
+        let result = vote(Some(String::from("")));
 
         assert!(result.is_err());
     }
