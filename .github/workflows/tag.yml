@@ -44,7 +44,7 @@ jobs:
       - name: Docker push app
         run: docker push ghcr.io/modulus/argocd-demo-app::${{ GITHUB_REF }}
       - name: Docker build locust
-        run: docker build -t ghcr.io/modulus/argocd-demo-app-locust::${{ GITHUB_REF }} .
+        run: docker build -t ghcr.io/modulus/argocd-demo-app-locust::${{ GITHUB_REF }} ./locust
       - name: Docker push locust
         run: docker push ghcr.io/modulus/argocd-demo-app-locust::${{ GITHUB_REF }}
 
