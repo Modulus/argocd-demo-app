@@ -41,9 +41,8 @@ jobs:
           password: ${{ secrets.CR_PAT }}
       - name: Docker build app
         run: |
-          echo ${{ GITHUB_REF }}
-          docker build -t ghcr.io/modulus/argocd-demo-app:${{ GITHUB_REF }} .
-          docker push ghcr.io/modulus/argocd-demo-app:${{ GITHUB_REF }}
-          docker build -t ghcr.io/modulus/argocd-demo-app-locust:${{ GITHUB_REF }} ./locust
-          docker push ghcr.io/modulus/argocd-demo-app-locust:${{ GITHUB_REF }}
+          docker build -t ghcr.io/modulus/argocd-demo-app:${{ env.GITHUB_REF }} .
+          docker push ghcr.io/modulus/argocd-demo-app:${{ env.GITHUB_REF }}
+          docker build -t ghcr.io/modulus/argocd-demo-app-locust:${{ env.GITHUB_REF }} ./locust
+          docker push ghcr.io/modulus/argocd-demo-app-locust:${{ env.GITHUB_REF }}
 
