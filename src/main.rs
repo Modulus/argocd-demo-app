@@ -5,6 +5,7 @@ use rand::Rng;
 use rocket::http::Status;
 use chrono::Utc;
 use rocket_prometheus::PrometheusMetrics;
+use rocket::response::status::BadRequest;
 use rocket::response::status;
 use log::{info};
 
@@ -47,13 +48,31 @@ fn fail() -> Status {
     create_error_status()
 }
 
+#[post("/vote/<color>")]
+fn vote(color: Option<String>) -> Result<String, BadRequest<String>> {
+    match color {
+        Some(color_string) => {
+            let voted_string = format!("You voted: {}", color_string);
+            match color_string.as_str() {
+                "green" => Ok(voted_string),
+                "red" => Ok(voted_string),
+                "yello" => Ok(voted_string),
+                _ =>  Err(BadRequest(Some(String::from("Invalid choice!"))))
+            }
+        },
+        _ => Err(BadRequest(Some(String::from("You did not vote"))))
+    }
+
+}
+
+
 fn main() {
     env_logger::init();
 
     let prometheus = PrometheusMetrics::new();
     rocket::ignite()
         .attach(prometheus.clone())
-        .mount("/", routes![index, version, slow, fail]).mount("/metrics", prometheus).launch();
+        .mount("/", routes![index, version, slow, fail, vote]).mount("/metrics", prometheus).launch();
 }
 
 fn create_error_status() -> Status {
@@ -85,6 +104,27 @@ mod tests {
     fn test_verify_create_error_status_returns_error_code() {
         let result = create_error_status();
         assert!(result.code >= 500 && result.code <= 511)
+    }
+
+    #[test]
+    fn test_vote_has_valid_color_green_returns_ok(){
+        let result = vote(Some(String::from("green")));
+
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn test_vote_has_valid_color_red_returns_ok(){
+        let result = vote(Some(String::from("red")));
+
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn test_vote_has_invalid_color_returns_err(){
+        let result = vote(Some(String::from("yes")));
+
+        assert!(result.is_err());
     }
 }
 
