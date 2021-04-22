@@ -40,11 +40,11 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.CR_PAT }}
       - name: Docker build app
-        run: docker build -t ghcr.io/modulus/argocd-demo-app::${{ GITHUB_REF }} .
+        run: docker build -t ghcr.io/modulus/argocd-demo-app:${{ GITHUB_REF }} .
       - name: Docker push app
-        run: docker push ghcr.io/modulus/argocd-demo-app::${{ GITHUB_REF }}
+        run: docker push ghcr.io/modulus/argocd-demo-app:${{ GITHUB_REF }}
       - name: Docker build locust
-        run: docker build -t ghcr.io/modulus/argocd-demo-app-locust::${{ GITHUB_REF }} ./locust
+        run: docker build -t ghcr.io/modulus/argocd-demo-app-locust:${{ GITHUB_REF }} ./locust
       - name: Docker push locust
-        run: docker push ghcr.io/modulus/argocd-demo-app-locust::${{ GITHUB_REF }}
+        run: docker push ghcr.io/modulus/argocd-demo-app-locust:${{ GITHUB_REF }}
 
