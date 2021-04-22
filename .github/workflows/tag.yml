@@ -39,18 +39,23 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.CR_PAT }}
+      - name: Set vars
+        id: vars
+        run: echo ::set-output name=tag::${GITHUB_REF#ref/*/}          
       - name: Docker build app
         uses: docker/build-push-action@v2
+        env:
+          RELEASE_VERSION: ${{ steps.vars.output.tag}}
         with:
           context: .
           push: true
-          tags: ghcr.io/modulus/argocd-demo-app:${{ GITHUB_REF }}
+          tags: ghcr.io/modulus/argocd-demo-app:${{ RELEASE_VERSION }}
       - name: Docker build locust
         uses: docker/build-push-action@v2
         with:
           context: .
           push: true
-          tags: ghcr.io/modulus/argocd-demo-app-locust:${{ GITHUB_REF }}
+          tags: ghcr.io/modulus/argocd-demo-app-locust:${{ RELEASE_VERSION }}
 
       # - name: Build all  
       #   run: |
