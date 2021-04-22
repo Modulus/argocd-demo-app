@@ -40,13 +40,13 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.CR_PAT }}
       - name: Docker build app
-        uses: docker-build-push-action@2
+        uses: docker/build-push-action@v2
         with:
           context: .
           push: true
           tags: ghcr.io/modulus/argocd-demo-app:${{ env.GITHUB_REF }}
       - name: Docker build locust
-        uses: docker-build-push-action@2
+        uses: docker/build-push-action@v2
         with:
           context: .
           push: true
