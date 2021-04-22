@@ -1,6 +1,6 @@
 [package]
 name = "argocd-demo-app"
-version = "1.0.1"
+version = "1.0.0"
 authors = ["John Sigvald Skauge <johnsigvaldskauge@tv2.no>"]
 edition = "2018"
 
