@@ -1,4 +1,8 @@
 ---
+
+# version 1.0.0 working
+# version 1.0.1 - Broken slow and missing requests
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -15,7 +19,7 @@ spec:
     spec:
       containers:
       - name: backend
-        image: ghcr.io/modulus/argocd-demo-app:latest
+        image: ghcr.io/modulus/argocd-demo-app:1.0.0 
         resources:
           limits:
             memory: "128Mi"
@@ -61,7 +65,7 @@ spec:
         env: 
           - name: HOST
             value: "http://backend:8000"
-        image: ghcr.io/modulus/argocd-demo-app-locust:latest
+        image: ghcr.io/modulus/argocd-demo-app-locust:1.0.0
         resources:
           limits:
             memory: "128Mi"
