@@ -74,15 +74,15 @@ fn fail() -> Status {
 
 #[post("/vote/<color>")]
 fn vote(color: Option<String>) -> Result<String, BadRequest<String>> {
-    use std::{thread, time};
-    let mut rng = rand::thread_rng();
-    let delay: u64 = rng.gen_range(0..3);
+    // use std::{thread, time};
+    // let mut rng = rand::thread_rng();
+    // let delay: u64 = rng.gen_range(0..3);
 
-    info!("{}", delay);
+    // info!("{}", delay);
 
-    let ten_millis = time::Duration::from_secs(delay);
-    thread::sleep(ten_millis);
-    info!("Done with expensive code");
+    // let ten_millis = time::Duration::from_secs(delay);
+    // thread::sleep(ten_millis);
+    // info!("Done with expensive code");
 
     match color {
         Some(color_string) => {
@@ -94,16 +94,16 @@ fn vote(color: Option<String>) -> Result<String, BadRequest<String>> {
                     GREEN_VOTES_COUNTER.with_label_values(&[color_string.as_str()]).inc();
                     Ok(voted_string)
                 }
-                // "red" => {
-                //     info!("Red vote registered!");
-                //     RED_VOTES_COUNTER.with_label_values(&[color_string.as_str()]).inc();
-                //     Ok(voted_string)
-                // }
-                // "yellow" => {
-                //     info!("Yellow vote registered!");
-                //     YELLOW_VOTES_COUNTER.with_label_values(&[color_string.as_str()]).inc();
-                //     Ok(voted_string)
-                // }
+                "red" => {
+                    info!("Red vote registered!");
+                    RED_VOTES_COUNTER.with_label_values(&[color_string.as_str()]).inc();
+                    Ok(voted_string)
+                }
+                "yellow" => {
+                    info!("Yellow vote registered!");
+                    YELLOW_VOTES_COUNTER.with_label_values(&[color_string.as_str()]).inc();
+                    Ok(voted_string)
+                }
                 _ =>  {
                     error!("Invalid color vote!");
                     Err(BadRequest(Some(String::from("Invalid choice!"))))
@@ -180,19 +180,19 @@ mod tests {
         assert!(result.is_ok());
     }
 
-    // #[test]
-    // fn test_vote_has_valid_color_red_returns_ok(){
-    //     let result = vote(Some(String::from("red")));
+    #[test]
+    fn test_vote_has_valid_color_red_returns_ok(){
+        let result = vote(Some(String::from("red")));
 
-    //     assert!(result.is_ok());
-    // }
+        assert!(result.is_ok());
+    }
 
-    // #[test]
-    // fn test_vote_has_valid_color_yellow_returns_ok(){
-    //     let result = vote(Some(String::from("yellow")));
+    #[test]
+    fn test_vote_has_valid_color_yellow_returns_ok(){
+        let result = vote(Some(String::from("yellow")));
 
-    //     assert!(result.is_ok());
-    // }
+        assert!(result.is_ok());
+    }
 
     #[test]
     fn test_vote_has_invalid_color_returns_err(){
@@ -223,35 +223,35 @@ mod tests {
         assert_eq!(response.body_string(), Some("You voted: green".into()));
     }
 
-    // #[test]
-    // fn test_api_call_voted_red_returns_expected_body_and_status(){
-    //     use rocket::local::Client;
-    //     use rocket::http::{ContentType, Status};
+    #[test]
+    fn test_api_call_voted_red_returns_expected_body_and_status(){
+        use rocket::local::Client;
+        use rocket::http::{ContentType, Status};
         
-    //     let rocket = rocket::ignite().mount("/", routes![vote]);
-    //     let client = Client::new(rocket).expect("valid rocket instance");
-    //     let mut response = client.post("/vote/red").dispatch();
+        let rocket = rocket::ignite().mount("/", routes![vote]);
+        let client = Client::new(rocket).expect("valid rocket instance");
+        let mut response = client.post("/vote/red").dispatch();
         
-    //     assert_eq!(response.status(), Status::Ok);
-    //     assert_eq!(response.content_type(), Some(ContentType::Plain));
-    //     // assert!(response.headers().get_one("X-Special").is_some());
-    //     assert_eq!(response.body_string(), Some("You voted: red".into()));
-    // }
+        assert_eq!(response.status(), Status::Ok);
+        assert_eq!(response.content_type(), Some(ContentType::Plain));
+        // assert!(response.headers().get_one("X-Special").is_some());
+        assert_eq!(response.body_string(), Some("You voted: red".into()));
+    }
 
-    // #[test]
-    // fn test_api_call_voted_yellow_returns_expected_body_and_status(){
-    //     use rocket::local::Client;
-    //     use rocket::http::{ContentType, Status};
+    #[test]
+    fn test_api_call_voted_yellow_returns_expected_body_and_status(){
+        use rocket::local::Client;
+        use rocket::http::{ContentType, Status};
         
-    //     let rocket = rocket::ignite().mount("/", routes![vote]);
-    //     let client = Client::new(rocket).expect("valid rocket instance");
-    //     let mut response = client.post("/vote/yellow").dispatch();
+        let rocket = rocket::ignite().mount("/", routes![vote]);
+        let client = Client::new(rocket).expect("valid rocket instance");
+        let mut response = client.post("/vote/yellow").dispatch();
         
-    //     assert_eq!(response.status(), Status::Ok);
-    //     assert_eq!(response.content_type(), Some(ContentType::Plain));
-    //     // assert!(response.headers().get_one("X-Special").is_some());
-    //     assert_eq!(response.body_string(), Some("You voted: yellow".into()));
-    // }
+        assert_eq!(response.status(), Status::Ok);
+        assert_eq!(response.content_type(), Some(ContentType::Plain));
+        // assert!(response.headers().get_one("X-Special").is_some());
+        assert_eq!(response.body_string(), Some("You voted: yellow".into()));
+    }
 
     #[test]
     fn test_api_call_fail_returns_failed_status(){
@@ -307,22 +307,3 @@ mod tests {
         assert_eq!(response.body_string(), Some("Hello, world!".into()));
     }
 }
-
-
-
-// #[get("/version")] 
-// fn version() -> status::Accepted<String> {
-//     info!("Calling /version endpoint");
-//     const VERSION: &'static str = env!("CARGO_PKG_VERSION");
-//     info!("Version found in file: {}", VERSION);
-//     let now = Utc::now();
-
-//     status::Accepted(Some(format!("version {} @ {}", VERSION, now)))
-// }
-
-// #[get("/")]
-// fn index() -> status::Accepted<String> {
-//     info!("Calling /");
-//     status::Accepted(Some(format!("Hello, world!")))
-// }
-
