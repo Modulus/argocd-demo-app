@@ -16,3 +16,7 @@ Install plugin: codellDB
 
 # Spin up local environment
 kind create cluster --name argo --config kind-config.yaml
+
+## Tagging
+
+x.x.x for versioning releases.
