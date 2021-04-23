@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
       - name: backend
-        image: ghcr.io/modulus/argocd-demo-app:1.0.0
+        image: ghcr.io/modulus/argocd-demo-app:1.0.1
         resources:
           limits:
             memory: "128Mi"
