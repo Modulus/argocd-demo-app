@@ -10,26 +10,24 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
-
-
 jobs:
-  # test:
-  #   runs-on: ubuntu-latest
-  #   container: rust:1.51-buster
-  #   steps:
-  #   - uses: actions/checkout@v2
-  #   - uses: actions/cache@v2
-  #     with:
-  #       path: |
-  #         ~/.cargo/registry
-  #         ~/.cargo/git
-  #         target
-  #       key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-  #   - name: Run tests
-  #     run: rustup default nightly && cargo test --verbose
+  test:
+    runs-on: ubuntu-latest
+    container: rust:1.51-buster
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/cache@v2
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          target
+        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+    - name: Run tests
+      run: rustup default nightly && cargo test --verbose
   package:
-    # if:
-    # needs: test
+    if:
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -53,31 +51,4 @@ jobs:
           docker build -t ghcr.io/modulus/argocd-demo-app:${{ steps.vars.outputs.tag }}  .
           docker push ghcr.io/modulus/argocd-demo-app:${{ steps.vars.outputs.tag }}           
           docker build -t ghcr.io/modulus/argocd-demo-app-locust:${{ steps.vars.outputs.tag }}  ./locust
-          docker push ghcr.io/modulus/argocd-demo-app-locust:${{ steps.vars.outputs.tag }}   
-          
-      #
-          
-      # 
-
-      # - name: Docker build app
-      #   uses: docker/build-push-action@v2
-      #   env:
-      #     RELEASE_VERSION: ${{ steps.vars.output.tag}}
-      #   with:
-      #     context: .
-      #     push: true
-      #     tags: ghcr.io/modulus/argocd-demo-app:${{ RELEASE_VERSION }}
-      # - name: Docker build locust
-      #   uses: docker/build-push-action@v2
-      #   with:
-      #     context: .
-      #     push: true
-      #     tags: ghcr.io/modulus/argocd-demo-app-locust:${{ RELEASE_VERSION }}
-
-      # - name: Build all  
-      #   run: |
-      #     docker build -t ghcr.io/modulus/argocd-demo-app:${{ env.GITHUB_REF }} .
-      #     docker push ghcr.io/modulus/argocd-demo-app:${{ env.GITHUB_REF }}
-      #     docker build -t ghcr.io/modulus/argocd-demo-app-locust:${{ env.GITHUB_REF }} ./locust
-      #     docker push ghcr.io/modulus/argocd-demo-app-locust:${{ env.GITHUB_REF }}
-
+          docker push ghcr.io/modulus/argocd-demo-app-locust:${{ steps.vars.outputs.tag }}

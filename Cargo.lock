@@ -74,6 +74,7 @@ dependencies = [
  "log 0.4.14",
  "once_cell",
  "rand",
+ "regex",
  "rocket",
  "rocket_prometheus",
 ]
