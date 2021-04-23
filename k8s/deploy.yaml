@@ -3,6 +3,7 @@
 # version 1.0.0 working
 # version 1.0.1 - Broken slow and missing requests
 # version 1.0.2 - Working again
+# version 1.0.4 - Broken but not slow
 
 apiVersion: apps/v1
 kind: Deployment
@@ -20,7 +21,7 @@ spec:
     spec:
       containers:
       - name: backend
-        image: ghcr.io/modulus/argocd-demo-app:1.0.0 
+        image: ghcr.io/modulus/argocd-demo-app:1.0.1
         resources:
           limits:
             memory: "128Mi"
