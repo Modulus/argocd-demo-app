@@ -39,6 +39,7 @@ metadata:
   namespace: demo
   labels:
     app: backend
+    activeService: rollout-active
 spec:
   selector:
     app: backend
